@@ -1,4 +1,4 @@
-(ns selection-sort)
+(ns algoritimos-ordenacao.selection-sort)
 
 (defn selection-sort
   "funcao de ordenacao seguindo o aloritimo de selection-sort"
