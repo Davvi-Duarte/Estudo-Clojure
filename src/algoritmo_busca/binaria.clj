@@ -1,34 +1,30 @@
 (ns algoritmo-busca.binaria)
-
-(def vetor [1 2 3 4 5 6 7 8 9])
-
 (defn busca-binaria
-  "algoritimo para realizar buscaa de um elemento m um vetor ordenado"
+  "funcao para definir busca binaria"
   [vetor elemento]
-  (loop [vetor-busca vetor
-         elemento-busca elemento]
-    (let [meio (nth (quot(count vetor-busca)2) vetor-busca)
-          vetordiv (split-at meio vetor-busca )
-          esquerdos (nth vetordiv 0)
-          direitos (nth vetordiv 1)]
+  (let [tamanho (count vetor)]
+    (loop [inicio 0
+           fim (dec tamanho)]
+      (if (> inicio fim)
+        nil
+        (let [meio (quot (+ inicio fim) 2)
+              valor-meio (nth vetor meio)]
+          (cond
+            (= elemento valor-meio) meio
+            (< elemento valor-meio) (recur inicio (dec meio))
+            :else (recur (inc meio) fim))
+          )
+        )
+      )
+    )
+  )
 
-      (println vetordiv)
-      (println meio)
-      (println esquerdos)
-      (println direitos)
+; Exemplo de uso da função de busca binária:
+(def vetor [1 2 3 4 5 6 7 8 9]) ; Define um vetor ordenado.
+(def elemento 9) ; Define o elemento que queremos encontrar.
 
-      (if (= [elemento-busca] esquerdos)
-        esquerdos
-        (if (= [elemento-busca] direitos)
-          direitos
-          (if (and (empty? esquerdos) (empty? direitos))
-            (str "esse número nao está presente no vetor")
-            (if (<= elemento-busca meio)
-              (recur esquerdos elemento-busca)
-              (if (> elemento meio)
-                (recur direitos elemento-busca)
-                (str "esse número nao está presente no vetor")))))))))
+(def indice (busca-binaria vetor elemento)) ; Chama a função de busca binária para encontrar o índice do elemento no vetor.
 
-
-(println vetor)
-(println busca-binaria vetor 2)
+(if indice
+  (println (str "Elemento encontrado no índice: " indice)) ; Se o índice não for nil, imprime o índice do elemento encontrado.
+  (println "Elemento não encontrado")) ; Caso contrário, imprime que o elemento não foi encontrado.
