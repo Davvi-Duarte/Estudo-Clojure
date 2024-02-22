@@ -1,5 +1,6 @@
 (ns algoritimos-ordenacao.merge-sort)
 
+;EM ANDAMENTO
 
 (def vetor [5 6 2 7 1 65 25 98 542 34 3 21 1])
 
