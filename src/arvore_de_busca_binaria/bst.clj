@@ -72,7 +72,7 @@
       (:valor (get-parent-menor node-especifico)); Se for uma folha e menor que o pai, retorna o valor do pai mais próximo menor
       (loop [node-rec node-especifico ; Caso contrário, itera recursivamente na árvore para encontrar o predecessor
              pega-subarvore-esquerda 0]; pegando os argumentos do nó que desejamos identificar o predecessor e uma flag q verifica se, em algum momento, ja acessamos a subarvore da esquerda
-        (cond;abrimos as condicionais para nossos casos de parada e de recursao
+        (cond ;abrimos as condicionais para nossos casos de parada e de recursao
 
           ; Se o nó não tem filho esquerdo, não tem filho direito, não acessou a sbuarvore da esquerda
           ; e seu valor é maior que o valor do pai, retorna o valor do pai
@@ -133,3 +133,4 @@
     (imprimir-desc-arvore (:direita node))))
 
 (println (imprimir-desc-arvore arvore-teste)) ;imprime descricao da arvore
+
