@@ -7,7 +7,7 @@
 ;----------------------------------------------------------------------------------------------------------------------------------
 
 ;Implementacao de uma árvore binaria de busca, com suas funcoes de construcao de arvore, criar nós, buscar nó especifico
-;e as funcoes de predecessor(IMPLEMENTADA, EM REFINAMENTO) e sucessor(EM DESENVOLVIMENTO) de cada nó.
+;e as funcoes de predecessor(SUJEITO A REFINAMENTO) e sucessor(SUJEITO A REFINAMENTO) de cada nó.
 
 (defrecord Node [valor esquerda direita pai]); defini um novo tipo de dado/expressao, que é um mapa contendo as chaves:
                                                 ; valor, esquerda, direita e o pai do nó
@@ -60,6 +60,8 @@
     (and (:pai node) (> (:valor node) (:valor (:pai node)))) (:pai node);caso o valor do nó seja maior que o do nó pai, retorna o nó pai
     :else nil));caso contrario, nao existe nó predecessor.
 
+
+
 ; para entender a funcao predecessor utilizei os conceitos demonstrados no material do profesor João Arthur que está referenciado no readme do repositorio
 (defn predecessor
   "funcao para encontrar o nó predecessor"
@@ -92,11 +94,49 @@
           ; Condição padrão caso não caia em nenhum dos casos anteriores indicando que não existe predecessor.
           :else nil)))))
 
+(defn get-parent-maior ;retorna o parent que seja maior que o proprio valor do nó
+  ;basicamente essa funcao ajuda a subir pelos níveis da arvore binaria de busca acessando os parents dos nós.
+  "funcao auxiliar das funcoes predecessore"
+  [node] ; recebe o nó
+  (cond
+    (and (:pai node) (< (:valor node) (:valor (:pai node)))) (:pai node) ;caso o valor do nó seja menor que o do nó pai, retorna o nó pai
+    (and (:pai node) (> (:valor node) (:valor (:pai node)))) (get-parent-maior (:pai node));caso o valor do nó seja maior que o do nó pai, sobe um nível acessando o nó pai
+    :else nil));caso contrario, nao existe nó sucessor.
+(defn sucessor
+  "funcao para encontrar o nó predecessor"
+  [arvore node]
+  ;Obtém o nó específico da árvore para realizarmos a verificacao do caso inicial
+  (let [node-especifico (get-node arvore node)]
+    (if (and (nil? (:esquerda node-especifico)); Verifica se o nó específico não tem filhos (é uma folha) e se é menor que o pai
+             (nil? (:direita node-especifico))
+             (> (:valor node-especifico) (:valor (:pai node-especifico))))
+      (:valor (get-parent-maior node-especifico)); Se for uma folha e maior que o pai, retorna o valor do pai mais próximo maior
+      (loop [node-rec node-especifico ; Caso contrário, itera recursivamente na árvore para encontrar o sucessor
+             pega-subarvore-direita 0]; pegando os argumentos do nó que desejamos identificar o predecessor e uma flag q verifica se, em algum momento, ja acessamos a subarvore da direita
+        (cond ;abrimos as condicionais para nossos casos de parada e de recursao
+
+          ; Se o nó não tem filho esquerdo, não tem filho direito, não acessou a sbuarvore da direita
+          ; e seu valor é menor que o valor do pai, retorna o valor do pai
+          (and (nil? (:esquerda node-rec)) (nil? (:direita node-rec)) (= pega-subarvore-direita 0) (< (:valor node-rec) (:valor (:pai node-rec))) ) (:valor (:pai node-rec))
+
+          ; Se o nó não tem filho direito, tem filho esquerdo, não acessou a sbuarvore da direita
+          ; e seu valor é menor que o valor do pai, retorna o valor do pai
+          (and (nil? (:direita node-rec)) (not (nil? (:esquerda node-rec))) (= pega-subarvore-direita 0) (< (:valor node-rec) (:valor (:pai node-rec))) ) (:valor (:pai node-rec))
+
+          ; Se o nó não tem filho esquerdo, e ja acessamos a subarvore da direita, retorna o valor do nó atual
+          (and (nil? (:esquerda node-rec)) (= pega-subarvore-direita 1)) (:valor node-rec)
+
+          ; Se o nó tem filho direito, e não acessou a asubárvore da direita, itera recursivamente na subárvore direita e altera a flag sinalizando que ja acessou a subárvore da direita
+          (and (not (nil? (:direita node-rec))) (= pega-subarvore-direita 0)) (recur (:direita node-rec) 1)
+          ; Se o nó tem filho esquerdo e ja acessou a subárvore da direita, itera recursivamente na subárvore esquerda
+          (and (not (nil? (:esquerda node-rec))) (= pega-subarvore-direita 1)) (recur (:esquerda node-rec) 1)
+          ; Condição padrão caso não caia em nenhum dos casos anteriores indicando que não existe sucessor.
+          :else nil)))))
 
 
 ;cria arvore teste (TESTE SIMPLES)
 (def arvore-teste (criar-arvore [15 9 31 53 76 2 41 11]))
-
+(def node-teste (get-parent-maior (get-node arvore-teste 11)))
 
 ;Função para imprimir a árvore de forma mais legível tentando siular a construcao da arvore
 (defn imprimir-arvore [node nivel]
@@ -117,6 +157,17 @@
 (println (predecessor arvore-teste 41))
 (println (predecessor arvore-teste 53))
 (println (predecessor arvore-teste 76))
+(println "-------------------------------")
+;imprime sessao dos valores dos sucessores de cada nó
+(println "---------SUCESSORES---------")
+(println (sucessor arvore-teste 2))
+(println (sucessor arvore-teste 9))
+(println (sucessor arvore-teste 11))
+(println (sucessor arvore-teste 15))
+(println (sucessor arvore-teste 31))
+(println (sucessor arvore-teste 41))
+(println (sucessor arvore-teste 53))
+(println (sucessor arvore-teste 76))
 (println "-------------------------------")
 
 ;imprime a descricao da arvore em forma de texto
